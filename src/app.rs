@@ -70,7 +70,7 @@ pub fn app() -> Html {
         <main>
             <div class={ classes!("flex", "flex-col", "items-stretch", "px-20", "py-10", "h-screen") }>
                 <h1 class={ classes!("py-5", "text-2xl") }>{ format!("syn-debugger-web v{}", env!("CARGO_PKG_VERSION")) }</h1>
-                <div class={ classes!("flex", "text-xl", "lg:text-md", "flex-col", "lg:flex-row", "grow", "w-full", "h-4/5") }>
+                <div class={ classes!("flex", "text-xl", "lg:text-sm", "flex-col", "lg:flex-row", "grow", "w-full", "h-4/5") }>
                     <div class={ classes!("flex", "flex-col", "px-5", "text-md", "w-full", "lg:w-1/2", "h-1/2", "lg:h-full") }>
                         <Input {input_ref} onchange={onchange.clone()}/>
                     </div>
