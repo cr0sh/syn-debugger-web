@@ -24,13 +24,13 @@ pub fn app() -> Html {
 
     html! {
         <main>
-            <div class={ classes!("mx-20", "my-10", "h-screen") }>
+            <div class={ classes!("flex", "flex-col", "items-stretch", "mx-20", "my-10", "h-screen") }>
                 <h1 class={ classes!("py-5", "text-xl") }>{ format!("syn-debugger-web v{}", env!("CARGO_PKG_VERSION")) }</h1>
-                <div class={ classes!("flex", "flex-row", "h-full") }>
-                    <div class={ classes!("px-5", "text-md", "w-1/2", "h-full") }>
+                <div class={ classes!("flex", "flex-row", "grow") }>
+                    <div class={ classes!("px-5", "text-md", "w-1/2") }>
                         <Input {input_ref} {onchange}/>
                     </div>
-                    <div class={ classes!("px-5", "text-md", "w-1/2", "h-full") }>
+                    <div class={ classes!("px-5", "text-md", "w-1/2") }>
                         <Output output={input_value}/>
                     </div>
                 </div>
@@ -68,7 +68,7 @@ fn input(props: &InputProperties) -> Html {
             <textarea ref={props.input_ref.clone()} onchange={move |_| onchange.emit(())} class={
                 classes!(
                     "w-full",
-                    "h-full",
+                    "h-4/5",
                     "px-2",
                     "pt-2",
                     "text-justify",
@@ -99,8 +99,9 @@ fn output(props: &OutputProperties) -> Html {
             <textarea readonly=true value={(*props.output).clone()} class={
                 classes!(
                     "w-full",
-                    "h-full",
-                    "p-2",
+                    "h-4/5",
+                    "px-2",
+                    "pt-2",
                     "text-justify",
                     "text-start",
                     "font-mono",
