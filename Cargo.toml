@@ -1,6 +1,6 @@
 [package]
 name = "syn-debugger-web"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 description = "A syntax debugger for procedural macro developers, powered by Syn and Yew."
 readme = "README.md"
