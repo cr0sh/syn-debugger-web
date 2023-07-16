@@ -35,7 +35,7 @@ pub fn app() -> Html {
                     </div>
                 </div>
                 <span class={ classes!("text-md", "py-2") }>
-                        { "(c) 2023 Junghyun Nam, Dual-licensed under Apache 2.0/MIT " }
+                        { "(c) 2023 Junghyun Nam, dual-licensed under Apache 2.0/MIT " }
                         <a class={ classes!("text-blue-600", "underline") } href={"https://github.com/cr0sh/syn-debugger-web"} target={"_blank"}>
                             { "source code" }
                         </a>
