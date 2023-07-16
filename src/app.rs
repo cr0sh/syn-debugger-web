@@ -151,7 +151,7 @@ fn output(props: &OutputProperties) -> Html {
     });
     html! {
         <>
-            <div class={ classes!("text-md", "my-2") }>
+            <div class={ classes!("text-md", "lg:text-lg", "my-2") }>
                 <span class={ classes!("font-mono", "bg-slate-100", "px-1", "rounded-sm") }>{"syn::parse::<"}</span>
                 <select onchange={onmethodchange} class={ classes!("font-mono", "text-center", "appearance-none", "px-0.5") }>
                     <option value="TokenStream">{ "TokenStream" }</option>
