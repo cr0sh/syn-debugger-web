@@ -689,7 +689,7 @@ dependencies = [
 
 [[package]]
 name = "syn-debugger-web"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "gloo-timers",
  "proc-macro2",
