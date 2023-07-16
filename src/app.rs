@@ -24,16 +24,22 @@ pub fn app() -> Html {
 
     html! {
         <main>
-            <div class={ classes!("flex", "flex-col", "items-stretch", "mx-20", "my-10", "h-screen") }>
+            <div class={ classes!("flex", "flex-col", "items-stretch", "px-20", "py-10", "h-screen") }>
                 <h1 class={ classes!("py-5", "text-xl") }>{ format!("syn-debugger-web v{}", env!("CARGO_PKG_VERSION")) }</h1>
-                <div class={ classes!("flex", "flex-row", "grow") }>
-                    <div class={ classes!("px-5", "text-md", "w-1/2") }>
+                <div class={ classes!("flex", "flex-row", "grow", "h-4/5") }>
+                    <div class={ classes!("flex", "flex-col", "px-5", "text-md", "w-1/2") }>
                         <Input {input_ref} {onchange}/>
                     </div>
-                    <div class={ classes!("px-5", "text-md", "w-1/2") }>
+                    <div class={ classes!("flex", "flex-col", "px-5", "text-md", "w-1/2") }>
                         <Output output={input_value}/>
                     </div>
                 </div>
+                <span class={ classes!("text-md", "py-2") }>
+                        { "(c) 2023 Junghyun Nam, Dual-licensed under Apache 2.0/MIT " }
+                        <a class={ classes!("text-blue-600", "underline") } href={"https://github.com/cr0sh/syn-debugger-web"} target={"_blank"}>
+                            { "source code" }
+                        </a>
+                </span>
             </div>
         </main>
     }
@@ -64,11 +70,11 @@ fn input(props: &InputProperties) -> Html {
     );
     html! {
         <>
-            <div class={ classes!("text-lg", "my-2") }>{ "Rust code" }</div>
+            <div class={ classes!("text-lg", "py-2") }>{ "Rust code" }</div>
             <textarea ref={props.input_ref.clone()} onchange={move |_| onchange.emit(())} class={
                 classes!(
                     "w-full",
-                    "h-4/5",
+                    "flex-1",
                     "px-2",
                     "pt-2",
                     "text-justify",
@@ -99,7 +105,7 @@ fn output(props: &OutputProperties) -> Html {
             <textarea readonly=true value={(*props.output).clone()} class={
                 classes!(
                     "w-full",
-                    "h-4/5",
+                    "flex-1",
                     "px-2",
                     "pt-2",
                     "text-justify",
