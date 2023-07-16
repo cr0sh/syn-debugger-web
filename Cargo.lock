@@ -694,6 +694,7 @@ dependencies = [
  "gloo-timers",
  "proc-macro2",
  "syn 2.0.26",
+ "wasm-bindgen",
  "web-sys",
  "yew",
 ]

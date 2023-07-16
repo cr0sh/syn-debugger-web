@@ -1,26 +1,70 @@
 #![allow(non_camel_case_types)]
 
 use gloo_timers::callback::Interval;
-use web_sys::HtmlTextAreaElement;
+use wasm_bindgen::JsCast;
+use web_sys::{HtmlSelectElement, HtmlTextAreaElement};
 use yew::prelude::*;
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum ParseMethod {
+    TokenStream,
+    Item,
+    Unknown,
+}
 
 #[function_component(App)]
 pub fn app() -> Html {
     let input_ref = use_node_ref();
     let input_value = use_state_eq(String::new);
-    let onchange = Callback::<(), _>::from({
-        let input_ref = input_ref.clone();
-        let input_value = input_value.clone();
-        move |_| {
-            let ta = input_ref.cast::<HtmlTextAreaElement>().unwrap();
-            let value = ta.value();
-            let syntax = syn::parse_str::<proc_macro2::TokenStream>(&value);
-            match syntax {
-                Ok(x) => input_value.set(format!("{x:#?}")),
-                Err(e) => input_value.set(format!("{e:#?}")),
+    let parse_method = use_state_eq(|| ParseMethod::Item);
+    let onchange = use_callback(
+        {
+            move |_,
+                  (input_ref, input_value, parse_method): &(
+                NodeRef,
+                UseStateHandle<String>,
+                UseStateHandle<ParseMethod>,
+            )| {
+                let ta = input_ref.cast::<HtmlTextAreaElement>().unwrap();
+                let value = ta.value();
+                match **parse_method {
+                    ParseMethod::TokenStream => {
+                        let syntax = syn::parse_str::<proc_macro2::TokenStream>(&value);
+                        match syntax {
+                            Ok(x) => input_value.set(format!("{x:#?}")),
+                            Err(e) => input_value.set(format!("{e:#?}")),
+                        }
+                    }
+                    ParseMethod::Item => {
+                        let syntax = syn::parse_str::<syn::Item>(&value);
+                        match syntax {
+                            Ok(x) => input_value.set(format!("{x:#?}")),
+                            Err(e) => input_value.set(format!("{e:#?}")),
+                        }
+                    }
+                    ParseMethod::Unknown => {
+                        input_value.set(String::from("it should not be selected"))
+                    }
+                }
             }
-        }
-    });
+        },
+        (input_ref.clone(), input_value.clone(), parse_method.clone()),
+    );
+
+    use_effect_with_deps(
+        {
+            let onchange = onchange.clone();
+            move |_| {
+                let interval = Interval::new(400, move || {
+                    onchange.emit(());
+                });
+                move || {
+                    interval.cancel();
+                }
+            }
+        },
+        onchange.clone(),
+    );
 
     html! {
         <main>
@@ -28,10 +72,10 @@ pub fn app() -> Html {
                 <h1 class={ classes!("py-5", "text-xl") }>{ format!("syn-debugger-web v{}", env!("CARGO_PKG_VERSION")) }</h1>
                 <div class={ classes!("flex", "flex-row", "grow", "h-4/5") }>
                     <div class={ classes!("flex", "flex-col", "px-5", "text-md", "w-1/2") }>
-                        <Input {input_ref} {onchange}/>
+                        <Input {input_ref} onchange={onchange.clone()}/>
                     </div>
                     <div class={ classes!("flex", "flex-col", "px-5", "text-md", "w-1/2") }>
-                        <Output output={input_value}/>
+                        <Output output={input_value} {parse_method} {onchange}/>
                     </div>
                 </div>
                 <span class={ classes!("text-md", "py-2") }>
@@ -54,20 +98,6 @@ struct InputProperties {
 #[function_component(Input)]
 fn input(props: &InputProperties) -> Html {
     let onchange = props.onchange.clone();
-    use_effect_with_deps(
-        {
-            let onchange = onchange.clone();
-            move |_| {
-                let interval = Interval::new(400, move || {
-                    onchange.emit(());
-                });
-                move || {
-                    interval.cancel();
-                }
-            }
-        },
-        (),
-    );
     html! {
         <>
             <div class={ classes!("text-lg", "py-2") }>{ "Rust code" }</div>
@@ -94,14 +124,40 @@ fn input(props: &InputProperties) -> Html {
 #[derive(PartialEq, Properties)]
 struct OutputProperties {
     output: UseStateHandle<String>,
+    onchange: Callback<(), ()>,
+    parse_method: UseStateHandle<ParseMethod>,
 }
 
 #[function_component(Output)]
 #[allow(unused_variables)]
 fn output(props: &OutputProperties) -> Html {
+    let onmethodchange = Callback::<Event, _>::from({
+        let onchange = props.onchange.clone();
+        let parse_method = props.parse_method.clone();
+        move |ev: Event| {
+            let sel = ev
+                .target()
+                .unwrap()
+                .dyn_into::<HtmlSelectElement>()
+                .unwrap();
+            let sel = match sel.value().as_str() {
+                "TokenStream" => ParseMethod::TokenStream,
+                "Item" => ParseMethod::Item,
+                _ => ParseMethod::Unknown,
+            };
+            parse_method.set(sel);
+        }
+    });
     html! {
         <>
-            <div class={ classes!("text-lg", "my-2") }><span class={ classes!("font-mono", "bg-slate-100", "px-1", "rounded-sm") }>{"syn::parse"}</span>{ " output" }</div>
+            <div class={ classes!("text-md", "my-2") }>
+                <span class={ classes!("font-mono", "bg-slate-100", "px-1", "rounded-sm") }>{"syn::parse::<"}</span>
+                <select onchange={onmethodchange} class={ classes!("font-mono", "text-center", "appearance-none", "px-0.5") }>
+                    <option value="TokenStream">{ "TokenStream" }</option>
+                    <option value="Item" selected=true>{ "syn::Item" }</option>
+                </select>
+                <span class={ classes!("font-mono", "bg-slate-100", "px-1", "rounded-sm") }>{">"}</span>
+                { " output" }</div>
             <textarea readonly=true value={(*props.output).clone()} class={
                 classes!(
                     "w-full",
