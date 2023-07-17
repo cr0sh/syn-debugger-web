@@ -667,7 +667,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        input = new URL('syn-debugger-web-9243f844a04c0c24_bg.wasm', import.meta.url);
+        input = new URL('syn-debugger-web-da1a8709da4078d5_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 
