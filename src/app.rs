@@ -115,7 +115,8 @@ fn input(props: &InputProperties) -> Html {
                     "border-solid",
                     "border-2",
                     "border-slate-800",
-                    "rounded-md"
+                    "rounded-md",
+                    "resize-none"
                 )
             }/>
         </>
@@ -173,7 +174,8 @@ fn output(props: &OutputProperties) -> Html {
                     "border-solid",
                     "border-2",
                     "border-slate-800",
-                    "rounded-md"
+                    "rounded-md",
+                    "resize-none"
                 )
             }></textarea>
         </>
